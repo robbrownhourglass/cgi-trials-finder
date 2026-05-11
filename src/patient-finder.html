@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Find a Clinical Trial — Cancer Trials Ireland</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f7f5;
+  --surface: #ffffff;
+  --border: #dde8dd;
+  --primary: #1c6e3d;
+  --primary-light: #e8f5ee;
+  --primary-dark: #134d2a;
+  --text: #1a2e1a;
+  --muted: #5a6e5a;
+  --bot-bg: #eef6f0;
+  --bot-border: #cde3d4;
+  --user-bg: #1c6e3d;
+  --user-text: #ffffff;
+  --card-border: #b8dcc4;
+  --warning-bg: #fef9e7;
+  --warning-border: #f5c842;
+  --warning-text: #7d5a00;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+header {
+  background: var(--primary);
+  color: #fff;
+  padding: 16px 24px;
+  flex-shrink: 0;
+}
+header h1 { font-size: 1.1rem; font-weight: 600; letter-spacing: -0.01em; }
+header p  { font-size: 0.78rem; opacity: 0.75; margin-top: 2px; }
+.notice {
+  background: var(--warning-bg);
+  border-bottom: 1px solid var(--warning-border);
+  color: var(--warning-text);
+  font-size: 0.78rem;
+  padding: 8px 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.chat-outer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 660px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 16px;
+  min-height: 0;
+}
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.msg {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 88%;
+  animation: fadeUp 0.2s ease;
+}
+.msg.bot { align-self: flex-start; }
+.msg.user { align-self: flex-end; flex-direction: row-reverse; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+.avatar {
+  width: 32px; height: 32px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+.bubble {
+  padding: 11px 15px;
+  border-radius: 18px;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+.bot .bubble {
+  background: var(--bot-bg);
+  border: 1px solid var(--bot-border);
+  border-bottom-left-radius: 5px;
+  color: var(--text);
+}
+.user .bubble {
+  background: var(--user-bg);
+  color: var(--user-text);
+  border-bottom-right-radius: 5px;
+}
+/* Typing dots */
+.typing { display: flex; gap: 5px; align-items: center; padding: 4px 2px; }
+.dot { width: 7px; height: 7px; background: var(--muted); border-radius: 50%; animation: blink 1.1s infinite; }
+.dot:nth-child(2) { animation-delay: 0.18s; }
+.dot:nth-child(3) { animation-delay: 0.36s; }
+@keyframes blink { 0%,80%,100% { opacity:0.25; transform:scale(0.85); } 40% { opacity:1; transform:scale(1); } }
+/* Reply buttons */
+.replies { padding: 10px 0 20px; display: flex; flex-direction: column; gap: 8px; }
+.reply-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.reply-grid.stacked { flex-direction: column; }
+.reply-grid.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.reply-grid.two-col .btn { width: 100%; border-radius: 10px; padding: 12px 14px; font-size: 0.83rem; }
+.btn {
+  padding: 9px 18px;
+  background: #fff;
+  border: 1.5px solid var(--primary);
+  border-radius: 22px;
+  color: var(--primary);
+  font: 500 0.875rem/1 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+  text-align: left;
+}
+.btn:hover { background: var(--primary); color: #fff; }
+.btn.full { width: 100%; border-radius: 10px; padding: 12px 16px; }
+/* Trial cards */
+.cards-wrap { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 100%; }
+.card {
+  background: #fff;
+  border: 1.5px solid var(--card-border);
+  border-radius: 13px;
+  padding: 15px 16px;
+}
+.card-name { font-weight: 600; font-size: 0.93rem; color: var(--primary-dark); margin-bottom: 5px; }
+.card-desc { font-size: 0.83rem; color: var(--muted); line-height: 1.5; margin-bottom: 10px; }
+.card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.tag {
+  font-size: 0.72rem; padding: 3px 10px; border-radius: 10px;
+  background: var(--primary-light); color: var(--primary-dark);
+  border: 1px solid var(--card-border);
+}
+.tag.here { background: #e8f0fe; color: #1549a0; border-color: #c0d5fc; }
+.card-links { display: flex; gap: 14px; flex-wrap: wrap; }
+.card-links a { font-size: 0.8rem; font-weight: 500; color: var(--primary); text-decoration: none; }
+.card-links a:hover { text-decoration: underline; }
+/* No results */
+.no-results { padding: 20px 4px; font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+footer {
+  padding: 12px 20px;
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  background: #fff;
+  flex-shrink: 0;
+}
+@media (max-width: 480px) { .msg { max-width: 96%; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Cancer Trials Ireland — Trial Finder</h1>
+  <p>Find open clinical trials that may be suitable for you</p>
+</header>
+
+<div class="notice">
+  &#9888;&#65039; For information only. Always speak with your doctor before making any decisions about clinical trials.
+</div>
+
+<div class="chat-outer">
+  <div class="messages" id="msgs"></div>
+  <div class="replies" id="replies"></div>
+</div>
+
+<footer>Cancer Trials Ireland &mdash; cancertrials.ie &nbsp;&middot;&nbsp; Data current as of May 2026</footer>
+
+<script>
+const CANCER_TYPES = [
+  { label: "Breast cancer",                             cat: "Breast" },
+  { label: "Bowel, stomach or oesophageal cancer",      cat: "Gastrointestinal" },
+  { label: "Lung cancer",                               cat: "Lung" },
+  { label: "Skin cancer or melanoma",                   cat: "Skin Cancer" },
+  { label: "Blood cancer or lymphoma",                  cat: "Lymphoma & Blood Cancers" },
+  { label: "Ovarian, womb or cervical cancer",          cat: "Gynaecological" },
+  { label: "Prostate, bladder or kidney cancer",        cat: "Genitourinary" },
+  { label: "Head and neck cancer",                      cat: "Head & Neck" },
+  { label: "Brain or spinal cord tumour",               cat: "Central Nervous System" },
+  { label: "Bone or soft tissue sarcoma",               cat: "Sarcoma" },
+  { label: "Cancer in a child or teenager (under 18)",  cat: "Paediatric" },
+  { label: "My cancer affects multiple organ types",    cat: "Basket (Multiple Types)" },
+];
+
+// ── Agent state ──
+const agentState = {
+  category:        null,
+  conversation:    [],
+  remainingNames:  null,
+  currentQuestion: null,
+};
+
+// ── DOM refs ──
+const msgsEl    = document.getElementById("msgs");
+const repliesEl = document.getElementById("replies");
+
+// ── Utilities ──
+function scrollDown() { setTimeout(() => msgsEl.scrollTop = msgsEl.scrollHeight, 60); }
+
+function escHtml(s) {
+  return String(s || "")
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function makeBotMsg(html) {
+  const el = document.createElement("div");
+  el.className = "msg bot";
+  el.innerHTML = '<div class="avatar">🌿</div><div class="bubble">' + html + '</div>';
+  return el;
+}
+
+// Animated typing delay — for intro messages
+function addBot(html) {
+  return new Promise(res => {
+    const typing = makeBotMsg('<div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>');
+    msgsEl.appendChild(typing); scrollDown();
+    setTimeout(() => {
+      typing.remove();
+      const msg = makeBotMsg(html);
+      msg.style.animation = "fadeUp 0.2s ease";
+      msgsEl.appendChild(msg);
+      scrollDown(); res();
+    }, 650);
+  });
+}
+
+// Immediate — for after API responses
+function addBotNow(html) {
+  const msg = makeBotMsg(html);
+  msg.style.animation = "fadeUp 0.2s ease";
+  msgsEl.appendChild(msg);
+  scrollDown();
+}
+
+function addUser(text) {
+  const el = document.createElement("div");
+  el.className = "msg user";
+  el.innerHTML = '<div class="bubble">' + escHtml(text) + '</div>';
+  msgsEl.appendChild(el); scrollDown();
+}
+
+function setReplies(options, handler, layout) {
+  repliesEl.innerHTML = "";
+  const grid = document.createElement("div");
+  grid.className = "reply-grid" +
+    (layout === "stacked" ? " stacked" : layout === "two-col" ? " two-col" : "");
+  options.forEach(opt => {
+    const b = document.createElement("button");
+    b.className = "btn" + (layout === "stacked" || layout === "two-col" ? " full" : "");
+    b.textContent = typeof opt === "string" ? opt : opt.label;
+    b.onclick = () => { repliesEl.innerHTML = ""; handler(opt); };
+    grid.appendChild(b);
+  });
+  repliesEl.appendChild(grid);
+}
+
+// ── Agent loop ──
+async function callAgent() {
+  // Show typing while waiting for the server
+  const typingEl = makeBotMsg(
+    '<div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>'
+  );
+  msgsEl.appendChild(typingEl); scrollDown();
+
+  let data;
+  try {
+    const resp = await fetch("/next-question", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        category:        agentState.category,
+        conversation:    agentState.conversation,
+        remaining_names: agentState.remainingNames,
+      }),
+    });
+    if (!resp.ok) throw new Error("HTTP " + resp.status);
+    data = await resp.json();
+  } catch (err) {
+    typingEl.remove();
+    addBotNow("Sorry, something went wrong connecting to the server. Please refresh the page and try again.");
+    return;
+  }
+
+  typingEl.remove();
+  agentState.remainingNames = data.remaining_names || agentState.remainingNames;
+
+  if (data.done || !data.question) {
+    showResults(data.remaining_trials || []);
+    return;
+  }
+
+  agentState.currentQuestion = data.question;
+  addBotNow(escHtml(data.question));
+
+  setReplies(data.options || [], async opt => {
+    const label = typeof opt === "string" ? opt : opt.label;
+    agentState.conversation.push({
+      question: agentState.currentQuestion,
+      answer:   label,
+    });
+    addUser(label);
+    await callAgent();
+  }, "stacked");
+}
+
+// ── Results ──
+function showResults(trials) {
+  repliesEl.innerHTML = "";
+
+  if (!trials || !trials.length) {
+    addBotNow(
+      "I wasn’t able to find any open trials currently listed for your profile." +
+      '<div class="no-results">This doesn’t mean there are no options for you. ' +
+      "New trials open regularly, and your oncologist may know of trials not yet listed here. " +
+      "Please bring this up at your next appointment.</div>"
+    );
+  } else {
+    const n = trials.length;
+    addBotNow(
+      "I found <strong>" + n + " trial" + (n > 1 ? "s" : "") + "</strong> " +
+      "that could be worth discussing with your doctor:"
+    );
+
+    const wrap = document.createElement("div");
+    wrap.className = "msg bot";
+    wrap.style.cssText = "max-width:100%;width:100%;align-self:stretch";
+    const cards = document.createElement("div");
+    cards.className = "cards-wrap";
+    trials.forEach(t => cards.appendChild(buildCard(t)));
+    wrap.appendChild(cards);
+    msgsEl.appendChild(wrap);
+    scrollDown();
+
+    addBotNow(
+      "These are <strong>possible matches</strong> — not a guarantee of eligibility. " +
+      "Your oncologist or a trial nurse is the right person to confirm whether any of these are right for you."
+    );
+  }
+
+  const grid = document.createElement("div");
+  grid.className = "reply-grid";
+  const b = document.createElement("button");
+  b.className = "btn";
+  b.textContent = "🔄 Start a new search";
+  b.onclick = () => {
+    msgsEl.innerHTML = "";
+    repliesEl.innerHTML = "";
+    Object.assign(agentState, { category: null, conversation: [], remainingNames: null, currentQuestion: null });
+    start();
+  };
+  grid.appendChild(b);
+  repliesEl.appendChild(grid);
+}
+
+function buildCard(t) {
+  const raw  = t.purpose || t.about || t.patient_population || "";
+  const desc = raw.length > 220 ? raw.slice(0, 220) + "…" : raw;
+
+  let tagsHtml = "";
+  if (t.sites) tagsHtml += '<span class="tag">📍 ' + escHtml(t.sites.split(",")[0].trim()) + '</span>';
+  if (t.type)  tagsHtml += '<span class="tag">' + escHtml(t.type) + '</span>';
+  if (t.phase) tagsHtml += '<span class="tag">Phase ' + escHtml(t.phase) + '</span>';
+
+  const regUrl = t.registry_url || t.clinicaltrials_gov_url;
+  let linksHtml = "";
+  if (regUrl && /^https?:\/\//.test(regUrl))
+    linksHtml += '<a href="' + escHtml(regUrl) + '" target="_blank" rel="noopener">More information ↗</a>';
+  if (t.url && /^https?:\/\//.test(t.url))
+    linksHtml += '<a href="' + escHtml(t.url) + '" target="_blank" rel="noopener">CTI trial page ↗</a>';
+
+  const div = document.createElement("div");
+  div.className = "card";
+  div.innerHTML =
+    '<div class="card-name">'  + escHtml(t.name) + '</div>' +
+    (desc    ? '<div class="card-desc">'  + escHtml(desc)  + '</div>' : "") +
+    (tagsHtml  ? '<div class="card-tags">'  + tagsHtml  + '</div>' : "") +
+    (linksHtml ? '<div class="card-links">' + linksHtml + '</div>' : "");
+  return div;
+}
+
+// ── Flow ──
+async function start() {
+  await addBot("Hello, and welcome. 👋");
+  await addBot(
+    "This tool can help you find out whether there might be an open clinical trial suitable for you " +
+    "through Cancer Trials Ireland."
+  );
+  await addBot("I’ll ask you a few questions to narrow things down. It takes about a minute.");
+  await stepCancerType();
+}
+
+async function stepCancerType() {
+  await addBot("What type of cancer have you been diagnosed with?");
+  setReplies(CANCER_TYPES, async opt => {
+    agentState.category = opt.cat;
+    addUser(opt.label);
+    await callAgent();
+  }, "two-col");
+}
+
+start();
+</script>
+</body>
+</html>

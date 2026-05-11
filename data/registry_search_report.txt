@@ -1,0 +1,139 @@
+CTI Registry Enrichment Report
+================================
+Trials searched: 32
+
+## PRISM  (25-15)
+  No match found on ClinicalTrials.gov
+
+## DESTINY-Breast15  (24-98)
+  NCT ID : NCT05950945
+  Score  : 0.90 (HIGH)
+  Match  : Trastuzumab Deruxtecan (T-DXd) in Patients Who Have Hormone Receptor-negative and Hormone Receptor-positive HER2-low or HER2 IHC 0 Metastatic Breast Cancer
+  CT.gov : https://clinicaltrials.gov/study/NCT05950945
+
+## PRIMROSE CSF  (24-08)
+  NCT ID : NCT07503704
+  Score  : 1.00 (HIGH)
+  Match  : A Prospective Study of the Genomic Landscape of Central Nervous System Disease Secondary to Breast Cancer Utilising Cell-free DNA Derived From Cerebrospinal Fluid (CSF)
+  CT.gov : https://clinicaltrials.gov/study/NCT07503704
+
+## TOURIST Platform Trial – Thoracic Umbrella Radiotherapy Study in stage IV NSCLC  (24-75)
+  No match found on ClinicalTrials.gov
+
+## NRG GU012 SAMURAI  (22-17)
+  NCT ID : NCT05327686
+  Score  : 0.96 (HIGH)
+  Match  : Testing the Addition of Stereotactic Radiation Therapy With Immune Therapy for the Treatment of Patients With Unresectable or Metastatic Renal Cell Cancer, SAMURAI Trial
+  CT.gov : https://clinicaltrials.gov/study/NCT05327686
+
+## SLECT  (23-09)
+  No match found on ClinicalTrials.gov
+
+## EMBT Registry  (23-26)
+  NCT ID : NCT01362985
+  Score  : 0.65 (MEDIUM)
+  Match  : Analysis of Data Collected in the European Group for Blood and Marrow Transplantation (EBMT) Registry for Off-Label Transplant Use of Plerixafor
+  CT.gov : https://clinicaltrials.gov/study/NCT01362985
+
+## LOGGIC Core  (20-29)
+  No match found on ClinicalTrials.gov
+
+## SIOPE DIPG Registry  (19-31)
+  No match found on ClinicalTrials.gov
+
+## SIOP EPENDYMOMA II  (2013-002766-39)
+  NCT ID : NCT02265770
+  Score  : 0.90 (HIGH)
+  Match  : An International Clinical Program for the Diagnosis and Treatment of Children With Ependymoma
+  CT.gov : https://clinicaltrials.gov/study/NCT02265770
+
+## NBL NK Study (TCD)  (no CTI number)
+  No match found on ClinicalTrials.gov
+
+## LCH IV  (2011-001699-20)
+  No match found on ClinicalTrials.gov
+  EudraCT found: 2011-001699-20 (no NCT cross-ref)
+
+## ITCC 054  (18-24)
+  No match found on ClinicalTrials.gov
+
+## ITCC 059  (18-16)
+  No match found on ClinicalTrials.gov
+
+## Interfant 06  (16-53)
+  No match found on ClinicalTrials.gov
+
+## NK-4-GBM  (26-03)
+  No match found on ClinicalTrials.gov
+
+## IMPROVE TMZ  (24-90)
+  NCT ID : NCT06546631
+  Score  : 1.00 (HIGH)
+  Match  : Investigating Mechanistic Predictors of Interpatient Variability and Temozolomide (TMZ) Induced Haematological Toxicity for Glioma Patients
+  CT.gov : https://clinicaltrials.gov/study/NCT06546631
+
+## CARDIA Trial  (24-16)
+  NCT ID : NCT00938470
+  Score  : 0.50 (LOW)
+  Match  : Docetaxel, Oxaliplatin, Capecitabine, Fluorouracil, and Radiation Therapy in Treating Patients With Locally Advanced Cancer of the Esophagus or Gastroesophageal Junction
+  CT.gov : https://clinicaltrials.gov/study/NCT00938470
+  ⚠️  LOW confidence — verify manually
+
+## Vulval Cancer: A Focus on Survivorship  (25-40)
+  No match found on ClinicalTrials.gov
+
+## AFG Post-RT  (24-117)
+  No match found on ClinicalTrials.gov
+
+## HELP-ER  (22-05)
+  No match found on ClinicalTrials.gov
+
+## CLL18 / MOIRAI  (24-34)
+  No match found on ClinicalTrials.gov
+
+## ALIDHE  (24-27)
+  NCT ID : NCT05907057
+  Score  : 1.00 (HIGH)
+  Match  : An Open-label Phase 3b Study of Ivosidenib in Combination With Azacitidine in Adult Patients Newly Diagnosed With IDH1m Acute Myeloid Leukemia (AML) Ineligible for Intensive Induction Chemotherapy.
+  CT.gov : https://clinicaltrials.gov/study/NCT05907057
+
+## MOSAICC  (19-41)
+  NCT ID : NCT01831635
+  Score  : 0.49 (LOW)
+  Match  : Myeloproliferative Neoplasms: an In-depth Case-control Study
+  CT.gov : https://clinicaltrials.gov/study/NCT01831635
+  ⚠️  LOW confidence — verify manually
+
+## Cell-free DNA  (24-29)
+  No match found on ClinicalTrials.gov
+
+## BD CHaPTeR  (24-26)
+  No match found on ClinicalTrials.gov
+
+## BD – Bone Marrow/Blood  (no CTI number)
+  No match found on ClinicalTrials.gov
+
+## GAMBIT  (24-61)
+  No match found on ClinicalTrials.gov
+
+## HRQOL  (24-101)
+  NCT ID : NCT07046481
+  Score  : 0.47 (LOW)
+  Match  : Physical Activity and Quality of Life in Childhood Cancersurvivors- a Long-term Follow-up
+  CT.gov : https://clinicaltrials.gov/study/NCT07046481
+  ⚠️  LOW confidence — verify manually
+
+## TPAC  (24-54)
+  No match found on ClinicalTrials.gov
+
+## TAGNEY  (24-19)
+  No match found on ClinicalTrials.gov
+
+## ANTHOS ANT 008 – Magnolia  (24-12)
+  No match found on ClinicalTrials.gov
+
+================================
+High/medium confidence (auto-applied): 7
+Low confidence (needs manual review):  3
+Not found:                             22
+Total new IDs added:                   10 / 32
