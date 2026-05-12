@@ -90,7 +90,7 @@ async def next_question(req: TurnRequest):
     n_asked = len(req.conversation)
 
     # Stop if small enough pool (after at least one question) or hit question limit
-    if (len(pool) <= 1 and n_asked > 0) or n_asked >= 5:
+    if (len(pool) <= 1 and n_asked > 0) or n_asked >= 8:
         names = [t["name"] for t in pool]
         return JSONResponse({
             "done": True,

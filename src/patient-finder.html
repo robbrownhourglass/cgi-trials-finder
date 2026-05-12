@@ -277,6 +277,14 @@ header img { height: 44px; width: auto; }
   padding: 22px 28px;
   min-height: 0;
 }
+.detail-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 16px;
+  flex-wrap: wrap;
+}
 .detail-back {
   display: inline-flex;
   align-items: center;
@@ -287,8 +295,9 @@ header img { height: 44px; width: auto; }
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0 0 14px 0;
+  padding: 0;
   font-family: 'DM Sans', sans-serif;
+  flex-shrink: 0;
 }
 .detail-back:hover { text-decoration: underline; }
 .detail-name {
@@ -331,6 +340,24 @@ header img { height: 44px; width: auto; }
   padding-bottom: 1px;
 }
 .detail-links a:hover { border-color: var(--primary); }
+.detail-chat-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 7px 14px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.1s;
+}
+.detail-chat-cta:hover { background: var(--primary-dark); }
 .no-results-msg {
   padding: 48px 24px;
   text-align: center;
@@ -414,10 +441,68 @@ header img { height: 44px; width: auto; }
 }
 .modal-btn:hover { background: var(--primary-dark); }
 
+/* ── Mobile toggle tabs ── */
+.mobile-tabs {
+  display: none;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-bottom: 2px solid var(--border);
+}
+.mobile-tab {
+  flex: 1;
+  padding: 10px 8px;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: color 0.1s, border-color 0.1s;
+}
+.mobile-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.mobile-tab-badge {
+  display: inline-block;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  margin-left: 5px;
+  vertical-align: middle;
+}
+
+/* ── Mobile action strip (shown in trials panel when flow completes) ── */
+.mobile-action-strip {
+  display: none;
+  flex-shrink: 0;
+  padding: 10px 14px 14px;
+  border-top: 2px solid var(--border);
+  background: var(--surface);
+  gap: 8px;
+}
+.mobile-action-strip .btn { flex: 1; }
+
 @media (max-width: 700px) {
-  .app-layout { flex-direction: column; }
-  .chat-panel { width: 100%; max-width: none; border-right: none; border-bottom: 2px solid var(--border); max-height: 55vh; }
-  .trials-panel { min-height: 45vh; }
+  .mobile-tabs { display: flex; }
+  .app-layout { position: relative; flex: 1; min-height: 0; }
+  .chat-panel {
+    position: absolute; inset: 0;
+    width: 100%; max-width: none;
+    border-right: none;
+    z-index: 1;
+  }
+  .trials-panel {
+    position: absolute; inset: 0;
+    width: 100%;
+    z-index: 1;
+  }
+  body.mobile-show-trials .chat-panel  { display: none; }
+  body.mobile-show-chat   .trials-panel { display: none; }
+  .mobile-action-strip { display: flex; }
 }
 </style>
 </head>
@@ -451,6 +536,11 @@ header img { height: 44px; width: auto; }
       <button class="modal-btn" onclick="document.getElementById('disclaimer-modal').classList.add('hidden'); start();">I understand — continue to demo</button>
     </div>
   </div>
+</div>
+
+<div class="mobile-tabs" id="mobile-tabs">
+  <button class="mobile-tab active" id="tab-chat" onclick="setMobilePanel('chat')">Chat</button>
+  <button class="mobile-tab" id="tab-trials" onclick="setMobilePanel('trials')">Trials<span class="mobile-tab-badge" id="mobile-trial-badge" hidden></span></button>
 </div>
 
 <div class="app-layout">
@@ -488,9 +578,13 @@ header img { height: 44px; width: auto; }
       </table>
     </div>
     <div class="detail-wrap" id="trial-detail-view" hidden>
-      <button class="detail-back" onclick="backToList()">&#8592; Back to trials</button>
+      <div class="detail-top-bar">
+        <button class="detail-back" onclick="backToList()">&#8592; Back to trials</button>
+        <button class="detail-chat-cta" id="detail-chat-btn" style="display:none">Ask me about this trial</button>
+      </div>
       <div id="detail-content"></div>
     </div>
+    <div class="mobile-action-strip" id="mobile-action-strip" hidden></div>
   </div>
 
 </div>
@@ -530,6 +624,39 @@ const detailContent = document.getElementById("detail-content");
 
 let currentHandler = null;
 
+// ── Mobile panel switching ──
+const mobileActionStrip = document.getElementById("mobile-action-strip");
+const mobileTrialBadge  = document.getElementById("mobile-trial-badge");
+
+function isMobile() { return window.innerWidth <= 700; }
+
+function setMobilePanel(panel) {
+  document.body.classList.remove("mobile-show-chat", "mobile-show-trials");
+  document.body.classList.add(panel === "trials" ? "mobile-show-trials" : "mobile-show-chat");
+  document.getElementById("tab-chat").classList.toggle("active", panel === "chat");
+  document.getElementById("tab-trials").classList.toggle("active", panel === "trials");
+}
+
+function updateMobileTrialBadge(count) {
+  if (count === null || count === undefined) { mobileTrialBadge.hidden = true; return; }
+  mobileTrialBadge.textContent = count;
+  mobileTrialBadge.hidden = false;
+}
+
+function setMobileActionStrip(buttons) {
+  // buttons: array of {label, onclick}
+  mobileActionStrip.innerHTML = "";
+  if (!buttons || !buttons.length) { mobileActionStrip.hidden = true; return; }
+  buttons.forEach(b => {
+    const el = document.createElement("button");
+    el.className = "btn";
+    el.textContent = b.label;
+    el.onclick = () => { mobileActionStrip.hidden = true; b.onclick(); };
+    mobileActionStrip.appendChild(el);
+  });
+  mobileActionStrip.hidden = false;
+}
+
 function scrollDown() { setTimeout(() => msgsEl.scrollTop = msgsEl.scrollHeight, 60); }
 
 function clearReplies() {
@@ -547,6 +674,7 @@ function submitTextAnswer() {
 }
 document.addEventListener("DOMContentLoaded", () => {
   textInputEl.addEventListener("keydown", e => { if (e.key === "Enter") submitTextAnswer(); });
+  if (isMobile()) setMobilePanel("chat");
   fetch("/trials")
     .then(r => r.json())
     .then(d => {
@@ -616,6 +744,7 @@ function setReplies(options, handler, layout, showTextInput = true) {
 function setTrialsHeader(count, hint) {
   trialsCount.textContent = count === null ? "—" : count + " trial" + (count !== 1 ? "s" : "");
   trialsHint.textContent  = hint || "";
+  updateMobileTrialBadge(count);
 }
 function piToSite(pi) {
   if (!pi) return null;
@@ -674,6 +803,9 @@ function showTrialDetail(t) {
     '<div class="detail-section"><h4>Inclusion criteria</h4>' + mkList(t.inclusion_criteria || []) + '</div>' +
     '<div class="detail-section"><h4>Exclusion criteria</h4>' + mkList(t.exclusion_criteria || []) + '</div>' +
     (links ? '<div class="detail-section"><h4>Links</h4><div class="detail-links">' + links + '</div></div>' : '');
+  const ctaBtn = document.getElementById("detail-chat-btn");
+  ctaBtn.style.display = "";
+  ctaBtn.onclick = () => { if (isMobile()) setMobilePanel("chat"); startTrialChat(t); };
 }
 function backToList() { detailView.hidden = true; listView.hidden = false; }
 
@@ -730,9 +862,12 @@ function showFinalResults(trials) {
   const n = trials.length;
   if (n === 1) {
     const trial = trials[0];
+    const rightPanelHint = isMobile()
+      ? "Tap the Trials tab above to view the full details."
+      : "You can read the full details in the panel on the right.";
     addBotNow(
       "Based on your answers, <strong>" + escHtml(trial.name) + "</strong> looks like the most relevant open trial for you. " +
-      "You can read the full details in the panel on the right."
+      rightPanelHint
     );
     addBotNow('<span style="font-size:0.8rem;color:var(--muted)">Your oncologist should confirm whether this trial is right for you.</span>');
     setReplies([
@@ -745,13 +880,29 @@ function showFinalResults(trials) {
         doStartOver();
       }
     }, "stacked", false);
+    if (isMobile()) {
+      setMobilePanel("trials");
+      setMobileActionStrip([
+        { label: "Tell me more about this trial", onclick: () => { setMobilePanel("chat"); startTrialChat(trial); } },
+        { label: "Start a new search",            onclick: () => { setMobilePanel("chat"); doStartOver(); } },
+      ]);
+    }
   } else {
+    const rightPanelHint = isMobile()
+      ? "Tap the Trials tab above to browse them."
+      : "Click any row on the right for full details.";
     addBotNow(
       "I found <strong>" + n + " trials</strong> that may be worth discussing with your doctor. " +
-      "Click any row on the right for full details."
+      rightPanelHint
     );
     addBotNow('<span style="font-size:0.8rem;color:var(--muted)">These are possible matches — your oncologist should confirm whether any are right for you.</span>');
     addStartOverButton();
+    if (isMobile()) {
+      setMobilePanel("trials");
+      setMobileActionStrip([
+        { label: "Start a new search", onclick: () => { setMobilePanel("chat"); doStartOver(); } },
+      ]);
+    }
   }
 }
 
@@ -768,6 +919,8 @@ function doStartOver() {
   msgsEl.innerHTML = ""; clearReplies();
   trialsTbody.innerHTML = ""; trialsTable.hidden = true;
   trialsEmpty.hidden = false; detailView.hidden = true; listView.hidden = false;
+  setMobileActionStrip([]);
+  if (isMobile()) setMobilePanel("chat");
   Object.assign(agentState, { category: null, conversation: [], remainingNames: null, currentQuestion: null });
   setTrialsHeader(null, "Select a cancer type to begin");
   fetch("/trials").then(r=>r.json()).then(d=>{setTrialsHeader(d.trials.length,"all active Cancer Trials Ireland trials");renderTrialsTable(d.trials,true);}).catch(()=>{});
@@ -779,8 +932,9 @@ let trialChatConversation = [];
 
 function startTrialChat(trial) {
   clearReplies();
-  // Show the trial detail in the right panel
+  setMobileActionStrip([]);
   showTrialDetail(trial);
+  if (isMobile()) setMobilePanel("chat");
 
   trialChatConversation = [];
   const typingEl = addTyping();
